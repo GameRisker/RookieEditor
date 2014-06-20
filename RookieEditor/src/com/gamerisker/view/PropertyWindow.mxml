@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="300" height="500" title="属性框"
+		  showStatusBar="true"
+		  creationComplete="Init()" xmlns:ns="http://flex.apache.org/experimental/ns"
+		  close="{RookieEditor.getInstante().Property = null}"
+		  addedToStage="{isPopUp = true}">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.core.SkinnableContainer;
+			import com.gamerisker.editor.Editor;
+			import com.gamerisker.event.ComponentEvent;
+			import com.gamerisker.manager.ControlManager;
+			import com.gamerisker.manager.SkinManager;
+			
+			import mx.managers.PopUpManager;
+			
+			private var m_target : Editor;
+			private var m_rowIndex : int;
+			
+			private var m_panel : EditorWindow = new EditorWindow;
+			
+			private function Init() : void
+			{			
+				statusBar.height = 3;
+				panel.titleDisplay.addEventListener(MouseEvent.MOUSE_DOWN,OnStartDrag);
+			}
+			
+			private function OnStartDrag(event : MouseEvent) : void
+			{
+				this.nativeWindow.startMove();
+			}
+			
+			public function setTarget(component : Editor) : void
+			{
+				m_target = component;
+				
+				if(component)panel.title ="属性 : " + m_target.type;
+				
+				updatePropVeiw();
+			}
+			
+			/**
+			 * 设置当前皮肤
+			 *   
+			 */
+			public function setSkin(type : String , skin : String) : Boolean
+			{
+				if(m_target.type == type)
+				{
+						m_target["skin"] = skin;
+						
+						m_target.addEventListener(ComponentEvent.CREATION_COMPLETE , updatePoint);
+
+						updatePropVeiw();
+						
+						return true;
+				}
+				
+				return false;
+			}
+			
+			private function updatePoint(event : *) : void
+			{
+				ControlManager.updatePoint();
+				m_target.removeEventListener(ComponentEvent.CREATION_COMPLETE,updatePoint);
+			}
+			
+			/**
+			 *	刷新表格中的组件属性 
+			 * 
+			 */		
+			public function ResetProperty() : void
+			{
+				if(isPopUp)
+				{
+					setTarget(m_target);
+					ControlManager.updatePoint();
+				}
+			}
+			
+			/**
+			 * 更新视图属性 
+			 * 
+			 */		
+			private function updatePropVeiw() : void
+			{
+				if(!m_target)
+				{
+					dataGrid.dataProvider = new ArrayList;
+					return;
+				}
+				
+				dataGrid.dataProvider = m_target.toArrayList();
+				
+//				RookieEditor.getInstante().Tree.update();		//Tree 必须在Code之上
+				RookieEditor.getInstante().Code.update();
+			}
+			
+			private function OnDoubleClick(event : MouseEvent) : void
+			{
+				var selected : Object = dataGrid.selectedItem;
+				
+				if(selected)
+				{
+					if(selected["Name"] == "skin")
+					{
+						RookieEditor.getInstante().Skin.open();
+						RookieEditor.getInstante().Skin.activate();
+						RookieEditor.getInstante().Skin.setSkin(m_target.type);
+					}
+					else
+					{
+						showWindow(selected,m_target);
+					}
+				}
+			}
+			
+
+			
+			public function hideWindow() : void{PopUpManager.removePopUp(m_panel)}
+			public function showWindow(value : Object,target : Editor) : void
+			{
+				m_panel.x = (this.width - m_panel.width) >> 1;
+				m_panel.y = (this.height - m_panel.height) >> 1;
+				
+				PopUpManager.addPopUp(m_panel,this);
+				
+				m_panel.setTarget(value,target);
+			}
+		]]>
+	</fx:Script>
+	<s:TitleWindow id="panel" title="Property :" width="100%" height="100%" horizontalCenter="0" verticalCenter="0" 
+				   mouseDown="{this.nativeWindow.startMove()}"
+				   close="{RookieEditor.getInstante().Property = null;this.close()}">
+		<s:DataGrid x="0" y="0" id="dataGrid" requestedRowCount="2" width="100%" height="100%" mouseDown="{event.stopPropagation()}" editable="true" doubleClickEnabled="true" doubleClick="OnDoubleClick(event)" styleName="myDataGrid">
+			<s:columns>
+				<mx:ArrayList>
+					<s:GridColumn id="column1" dataField="Name" headerText="属性名" editable="false"/>
+					<s:GridColumn id="column2" dataField="Value" headerText="属性值" editable="false"/>
+				</mx:ArrayList>
+			</s:columns>
+		</s:DataGrid>
+	</s:TitleWindow>
+	
+</s:Window>

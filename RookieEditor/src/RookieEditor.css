@@ -1,0 +1,47 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace windowClasses "mx.core.windowClasses.*";
+
+mx|ToolTip
+{
+	fontSize:12pt;
+}
+s|Panel
+{
+	fontSize: 12pt;
+	textAlign: left;
+	color: #323232;
+	borderAlpha: 1;
+	cornerRadius:12;
+	borderWeight: 3;
+	borderColor: #333333;
+	backgroundColor: #CCCCCC;
+}
+
+.panelTitleStyle
+{
+	textAlign: left;
+}
+
+.myTree {
+	alternatingItemColors: #CCCCCC;
+	rollOverColor: #AADEFF;
+	selectionColor: #7FCDFE;
+	selectionDisabledColor: #DDDDDD;
+	textRollOverColor: #2B333C;
+	textSelectedColor: #2B333C;
+}
+
+.myDataGrid
+{
+	alternatingRowColors:undefined;
+	borderAlpha:1.0;
+	borderColor:#000000;
+	borderVisible:true;
+	caretColor:#0167FF;
+	contentBackgroundAlpha:1;
+	contentBackgroundColor:#CCCCCC;
+	rollOverColor:#CEDBEF;
+	selectionColor:#A8C6EE;
+}

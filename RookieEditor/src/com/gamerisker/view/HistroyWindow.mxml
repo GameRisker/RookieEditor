@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="300" height="300" backgroundColor="#CCCCCC" contentBackgroundColor="#CCCCCC" addedToStage="Init(event)">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.command.ICommand;
+			import com.gamerisker.manager.OperateManager;
+			
+			import mx.collections.ArrayList;
+			private function Init(event : Event) : void
+			{
+				statusBar.height = 3;
+			}
+			
+			public function update() : void
+			{
+				list.dataProvider = new ArrayList(RookieEditor.getInstante().Operate.getList());
+			}
+			
+			public function selectedIndex(value : int) : void
+			{
+				if(value > -1)
+					list.selectedIndex = value;	
+			}
+			
+			private function OnChangeEvent(event : Event) : void
+			{
+				var command : ICommand = (event.target as List).selectedItem;
+				if(command)
+					command.execute();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:TitleWindow title="历史列表" x="0" y="0" width="100%" height="100%" id="panel" mouseDown="{this.nativeWindow.startMove()}" close="{RookieEditor.getInstante().Select = null;this.close()}">
+		<s:List id="list" width="100%" height="100%" change="OnChangeEvent(event)" mouseDown="{event.stopPropagation();}">
+			<s:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer>
+						<s:Label id="nameLabel" text="{data['name']}" fontSize="12" top="5" left="5" right="5" height="16" />
+					</s:ItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+	</s:TitleWindow>
+</s:Window>

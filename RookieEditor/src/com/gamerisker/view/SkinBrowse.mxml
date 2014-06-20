@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="1200" height="600" showStatusBar="false"
+		  title="SkinBrowse"
+		  close="Destroy()">
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.manager.PngManager;
+			import com.gamerisker.manager.SkinManager;
+			
+			import mx.events.FlexEvent;
+			import mx.events.FlexMouseEvent;
+			
+			import spark.components.Alert;
+			import spark.components.Button;
+			import spark.components.HGroup;
+			import spark.components.Image;
+			import spark.components.Label;
+			
+			private var dictionary : Dictionary = new Dictionary;
+			
+			private var curTarget : Object;
+			private var curType : String;
+			
+			private function Destroy() : void
+			{
+				while(group.numChildren>0)
+				{
+					delete dictionary[group.removeElementAt(0)];
+				}
+				input.text = "";
+				RookieEditor.getInstante().Skin = null;
+			}
+			
+			public function setSkin(type : String) : void
+			{
+				switch(type)
+				{
+					case "Button" :
+						forSkinButton(SkinManager.buttonList,type);
+						break
+					case "TitleWindow" :
+						forSkinButton(SkinManager.popupWindowList,type);
+						break
+					case "ImageButton" :
+						forSkinButton(SkinManager.imagebuttonList,type);
+						break
+					case "CheckBox" :
+						forSkinButton(SkinManager.checkBoxList,type);
+						break
+					case "ComboBox" :
+//						forSkinButton(SkinManager.c);
+						break
+					case "RadioButton" :
+						forSkinButton(SkinManager.radiobuttonList,type);
+						break
+					case "Slider" :
+						forSkinButton(SkinManager.sliderList,type);
+						break
+					case "SkinImage" :
+						forSkinButton(SkinManager.uiimageList,type);
+						break
+					case "SkinFrame" :
+						forSkinButton(SkinManager.uiframeList,type);
+						break
+					case "ImageNumber" :
+						forSkinButton(SkinManager.uiimagenumber,type);
+						break
+				}
+				
+			}
+			
+			private function forSkinButton(value : Object,type : String , selectName : String = "") : void
+			{
+				while(group.numChildren>0)
+				{
+					delete dictionary[group.removeElementAt(0)];
+				}
+
+				curTarget = value;
+				curType = type;
+				
+				var button : Button;
+				var left : VGroup;
+				var right : VGroup;
+				var center : HGroup;
+				var labG : HGroup;
+				
+				var image : Image;
+				var index : int;
+				var color : uint;
+				var bitmap : Bitmap;
+				
+				const minHeight : int = 100;
+				const maxWidth : int = 1150;
+				const minWidth : int = maxWidth >> 1;
+				
+				var leftWidth : int;
+				var rightWidth : int;
+				
+				for each(var item : Object in value)
+				{
+					if(selectName=="" || item["name"].indexOf(selectName) > -1)
+					{
+						left = new VGroup;
+						right = new VGroup;
+						center = new HGroup;
+						labG = new HGroup;
+						
+						button = new Button();
+						button.width = 150;
+						button.label = item["name"];
+						dictionary[button] = item;
+						button.addEventListener(MouseEvent.CLICK , OnSelectSkinClick , false,0,true);
+						
+						bitmap = PngManager.getUrl(item,type);
+						
+						leftWidth = bitmap.width > minWidth ? bitmap.width : minWidth;
+						rightWidth = leftWidth > minWidth ? (maxWidth - leftWidth) : minWidth;
+						
+						image = new Image();
+						image.source = bitmap;
+						
+						if(index%2 == 0)
+							color = 0xcccccc;
+						else
+							color = 0xffffff;
+						
+						left.addElement(image);
+						left.width = leftWidth;
+						left.height = bitmap.height > minHeight ? bitmap.height : minHeight;
+						left.graphics.beginFill(color,0.5);
+						left.graphics.drawRect(0,0,left.width,left.height);
+						left.horizontalAlign = "center";
+						left.verticalAlign="middle";
+						
+						right.addElement(button);
+						right.width = rightWidth;
+						right.height = bitmap.height > minHeight ? bitmap.height : minHeight;
+						right.graphics.beginFill(color,0.5);
+						right.graphics.drawRect(0,0,right.width,right.height);
+						right.horizontalAlign = "right";
+						right.verticalAlign="middle";
+						
+						center.addElement(left);
+						center.addElement(right);
+						
+						var labNum : Label = new Label();
+						labNum.text = index.toString();
+						labG.width = maxWidth;
+						labG.addElement(labNum);
+						labG.horizontalAlign = "center";
+						labG.verticalAlign="middle";
+						
+						var labParent : Label = new Label;
+						labParent.text = item["skinParent"];
+						labG.addElement(labParent);
+						
+						group.addElement(labG);
+						group.addElement(center);
+						
+						index++;
+					}
+				}
+			}
+			
+			private function OnSelectSkinClick(event : MouseEvent) : void
+			{
+				var button : Button = Button(event.target);
+				var item : Object = dictionary[button];
+				
+				if(!RookieEditor.getInstante().Property.setSkin(curType,item["name"]))
+				{
+					Alert.show("设置的skin无法修改当前类型："+curType);
+				}
+			}
+			
+			private function OnEnterClick(event : FlexEvent) : void
+			{
+				forSkinButton(curTarget,curType,input.text);
+			}
+		]]>
+	</fx:Script>
+	<s:TitleWindow title="皮肤资源浏览"
+			 width="100%" height="100%" 
+			 horizontalCenter="0" verticalCenter="0" close="{this.close()}" mouseDown="{this.nativeWindow.startMove()}"
+			 > 
+		<s:Scroller id="scroller" x="0" y="0" width="100%" height="100%"  mouseDown="{event.stopPropagation();}" >
+			<!--s:Group width="100%" height="100%" verticalAlign="baseline"-->
+				<s:VGroup id="group" width="100%" height="100%">
+
+				</s:VGroup>
+			<!--/s:Group-->
+		</s:Scroller>
+		
+		<s:controlBarContent>
+			<s:HGroup gap="5">
+				<s:Label text="搜索 : " fontWeight="bold" />
+				<s:TextInput id="input" width="200" enter="OnEnterClick(event)"/>
+			</s:HGroup>
+		</s:controlBarContent>
+	</s:TitleWindow>
+	
+</s:Window>

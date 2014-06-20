@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="600" height="300" backgroundColor="#CCCCCC" title="配置项目属性"
+		 addedToStage="Init()"
+		 close="{RookieEditor.getInstante().System = null}"
+		 >
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		
+		<![CDATA[
+	
+			import com.gamerisker.core.Define;
+			import com.gamerisker.manager.SharedManager;
+			
+			import mx.controls.ToolTip;
+			import mx.core.UIComponent;
+			import mx.managers.ToolTipManager;
+			
+			import spark.components.Alert;
+			
+			public function setDefaultPath() : void
+			{
+				var os : String = Capabilities.os;
+				var url : String = File.applicationDirectory.nativePath;
+				if(os.indexOf("Mac") > -1)
+				{
+					SharedManager.getInstance().setConfigUrl(url+"/source/XMLSource/UIConfig.cfg");
+					SharedManager.getInstance().setTextureUrl(url+"/source");
+					SharedManager.getInstance().setSkinUrl(url+"/source/XMLSource/SkinConfig.xml");
+					SharedManager.getInstance().setUiSrcUrl(url+"/source/UIXML");
+					SharedManager.getInstance().setSceneUrl(url+"/source/XMLSource/SceneSource.xml");
+				}
+				else
+				{
+					SharedManager.getInstance().setConfigUrl(url+"\\source\\XMLSource\\UIConfig.cfg");
+					SharedManager.getInstance().setTextureUrl(url+"\\source");
+					SharedManager.getInstance().setSkinUrl(url+"\\source\\XMLSource\\SkinConfig.xml");
+					SharedManager.getInstance().setUiSrcUrl(url+"\\source\\UIXML");
+					SharedManager.getInstance().setSceneUrl(url+"\\source\\XMLSource\\SceneSource.xml");
+				}
+			}
+			
+			private function Init() : void
+			{
+				statusBar.height = 3;
+				cfgPath.text = SharedManager.getInstance().getConfigUrl();
+				texturePath.text = SharedManager.getInstance().getTextureUrl();
+				skinPath.text = SharedManager.getInstance().getSkinUrl();
+				uiPath.text = SharedManager.getInstance().getUiSrcUrl();
+				scenePath.text = SharedManager.getInstance().getSceneUrl();
+				
+			}
+			
+			private function openConfigPath() : void
+			{
+				var m_XMLFile : File = new File(SharedManager.getInstance().getConfigUrl());
+				m_XMLFile.browseForOpen("选择.cfg 保存路径");
+				m_XMLFile.addEventListener(Event.SELECT,
+				function(event : Event):void
+				{
+					cfgPath.text = (event.target as File).nativePath;
+				});
+			}
+			
+			private function openTexturePath() : void
+			{
+				var m_XMLFile : File = new File(SharedManager.getInstance().getTextureUrl());
+				m_XMLFile.browseForDirectory("选择纹理保存路径");
+				m_XMLFile.addEventListener(Event.SELECT,
+					function(event : Event):void
+					{
+						texturePath.text = (event.target as File).parent.nativePath;
+					});
+			}
+			
+			private function openSkinnablePath() : void
+			{
+				var m_XMLFile : File = new File(SharedManager.getInstance().getSkinUrl());
+				m_XMLFile.browseForOpen("选择皮肤保存路径");
+				m_XMLFile.addEventListener(Event.SELECT,
+					function(event : Event):void
+					{
+						skinPath.text = (event.target as File).nativePath;
+					});
+			}
+			
+			private function openUiConfigPath() : void
+			{
+				var m_XMLFile : File = new File(SharedManager.getInstance().getUiSrcUrl());
+				m_XMLFile.browseForDirectory("选择界面配置文件路径");
+				m_XMLFile.addEventListener(Event.SELECT,
+					function(event : Event):void
+					{
+						uiPath.text = (event.target as File).nativePath;
+					});
+			}
+			
+			private function openScenePath() : void
+			{
+				var m_XMLFile : File = new File(SharedManager.getInstance().getSceneUrl());
+				m_XMLFile.browseForOpen("选择场景配置文件路径");
+				m_XMLFile.addEventListener(Event.SELECT,
+					function(event : Event):void
+					{
+						scenePath.text = (event.target as File).nativePath;
+					});
+			}
+			
+			private function onSureEvent() : void
+			{
+				var isBool : Boolean = false;
+				if(SharedManager.getInstance().getConfigUrl() != cfgPath.text)
+				{
+					SharedManager.getInstance().setConfigUrl(cfgPath.text);
+					isBool = true;
+				}
+				
+				if(SharedManager.getInstance().getTextureUrl() != texturePath.text)
+				{
+					SharedManager.getInstance().setTextureUrl(texturePath.text);
+					isBool = true;
+				}
+				
+				if(SharedManager.getInstance().getSkinUrl() != skinPath.text)
+				{
+					SharedManager.getInstance().setSkinUrl(skinPath.text);
+					isBool = true;
+				}
+				
+				if(SharedManager.getInstance().getUiSrcUrl() != uiPath.text)
+				{
+					SharedManager.getInstance().setUiSrcUrl(uiPath.text);
+					isBool = true;
+				}
+				
+				if(SharedManager.getInstance().getSceneUrl() != scenePath.text)
+				{
+					SharedManager.getInstance().setSceneUrl(scenePath.text);
+					isBool = true;
+				}
+				
+				if(isBool)
+				{
+					Alert.show("请重新打开界面编辑器","",Alert.OK,this,function():void{RookieEditor.getInstante().OnCloseWindow(null)});
+				}
+				else
+				{
+					onCancelEvent();
+				}
+			}
+			
+			private function onCancelEvent() : void
+			{
+				this.close();
+			}
+		]]>
+	</fx:Script>
+	<s:TitleWindow width="100%" height="100%" mouseDown="{this.nativeWindow.startMove();}" title="项目系统设置" close="{RookieEditor.getInstante().System = null;this.close();}">
+		<s:VGroup x="10" y="10" width="90%" height="649">
+			<s:HGroup width="100%" height="24">
+				<s:Label width="93" height="100%" text="cfg保存路径：" textAlign="center" verticalAlign="middle"/>
+				<s:TextInput id="cfgPath" width="84%" height="24" editable="false" toolTip="UI界面打包路径（一般都存放在项目文件夹中）"/>
+				<s:Button width="46" height="24" label="浏览" click="openConfigPath()"/>
+			</s:HGroup>
+			<s:HGroup width="100%" height="24">
+				<s:Label width="93" height="100%" text="场景纹理路径：" textAlign="center" verticalAlign="middle"/>
+				<s:TextInput id="texturePath" width="84%" height="24" editable="false" toolTip="皮肤资源纹理保存路径,atf文件（这里显示的是纹理路径的父路径）"/>
+				<s:Button width="46" height="24" label="浏览" click="openTexturePath()"/>
+			</s:HGroup>
+			<s:HGroup width="100%" height="24">
+				<s:Label width="93" height="100%" text="场景配置路径：" textAlign="center" verticalAlign="middle"/>
+				<s:TextInput id="scenePath" width="84%" height="24" editable="false" toolTip="场景资源的配置文件路径（不同的场景加载不同的资源纹理ATF文件）"/>
+				<s:Button width="46" height="24" label="浏览" click="openScenePath()"/>
+			</s:HGroup>
+			<s:HGroup width="100%" height="24">
+				<s:Label width="93" height="100%" text="Skin配置文件：" textAlign="center" verticalAlign="middle"/>
+				<s:TextInput id="skinPath" width="84%" height="24" editable="false" toolTip="组件界面配置文件	SkinConfig.xml"/>
+				<s:Button width="46" height="24" label="浏览" click="openSkinnablePath()"/>
+			</s:HGroup>
+			<s:HGroup width="100%" height="24">
+				<s:Label width="93" height="100%" text="界面配置文件：" textAlign="center" verticalAlign="middle"/>
+				<s:TextInput id="uiPath" width="84%" height="24" editable="false" toolTip="界面的XML配置文件保存路径（一般不需要将这些文件放在项目文件夹中）"/>
+				<s:Button width="46" height="24" label="浏览" click="openUiConfigPath()"/>
+			</s:HGroup>
+			<s:HGroup width="100%" height="24"></s:HGroup>
+			<s:HGroup width="100%" height="24">
+				<s:Label width="93" height="100%" text="背景颜色：" textAlign="center" verticalAlign="middle"/>
+				<s:TextInput id="colinput" width="75" height="100%" editable="false" text="0xcccccc"/>
+				<mx:ColorPicker id="_color" selectedColor="0xcccccc" change="{colinput.text = '0x' + int(_color.selectedColor).toString(16).toLocaleUpperCase();	Define.starlingStg.color = event.color;}"/>
+			</s:HGroup>
+			<s:HGroup width="100%" height="24" horizontalAlign="center">
+				<s:Button height="100%" label="确定" click="onSureEvent()"/>
+				<s:Button height="100%" label="取消" click="onCancelEvent()"/>
+			</s:HGroup>
+		</s:VGroup>
+	</s:TitleWindow>
+</s:Window>

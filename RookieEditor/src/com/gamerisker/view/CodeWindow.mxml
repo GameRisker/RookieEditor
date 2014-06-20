@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="800" height="600" addedToStage="Init(event)" showStatusBar="true" title="CodeWindow"
+		  close="{RookieEditor.getInstante().Code = null}">
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.core.Define;
+			import com.gamerisker.editor.Editor;
+			
+			import mx.managers.PopUpManager;
+			
+			import spark.components.Alert;
+			
+			private function Init(event : Event) : void
+			{
+				isPopUp = true;
+				statusBar.height = 3;
+				update();
+			}
+			
+			private function onStartDarg(e:Event) : void
+			{
+				this.nativeWindow.startMove();
+			}
+			
+			public function update() : void
+			{
+				if(isPopUp)
+				{
+					var index:int = 0;
+					var component : Editor;
+					var xmlString : String = "";
+					var numChildren : int = Define.editorContainer.numChildren;
+					
+					var s_xml : String = "";
+					
+					while(numChildren > index)
+					{
+						component = Define.editorContainer.getChildAt(index) as Editor;
+						if(component)
+						{
+							s_xml += component.toXMLString();
+						}
+						index++;
+					}
+					
+					setXML("<stage>"+ s_xml +"</stage>");
+				}
+			}
+			
+			private function setXML(value : String) : void
+			{
+				var xml : XML;
+				try{xml = new XML(value);}
+				catch(e : Error)
+				{
+					Alert.show("XML 格式 错误","",Alert.OK,this);
+					xml = new XML("<stage></stage>")
+				}
+				
+				area.text = xml.toXMLString();
+			}
+			
+			private function OnChange(event : Event) : void
+			{
+				try
+				{
+					var xml : XML = new XML(area.text);
+				}
+				catch(e : Error)
+				{
+					Alert.show("XML 格式 错误","",Alert.OK,this);
+				}
+			}
+			
+			private function OnClickUpdate(event : Event) : void
+			{
+				
+			}
+			
+			private function OnStop(event : MouseEvent) : void
+			{
+				event.stopPropagation();
+			}
+		]]>
+	</fx:Script>		
+	<s:TitleWindow id="panel" title="组件树" width="100%" height="100%" horizontalCenter="0" verticalCenter="0" mouseDown="onStartDarg(event)" close="{this.close();}">
+		<s:TextArea width="100%" height="100%" id="area" change="OnChange(event)" mouseDown="OnStop(event)"></s:TextArea>
+		
+		<s:controlBarContent>
+			<s:HGroup verticalAlign="baseline">
+				<s:Button label="更新" click="OnClickUpdate(event)"></s:Button>
+			</s:HGroup>
+		</s:controlBarContent>   
+	</s:TitleWindow>
+</s:Window>

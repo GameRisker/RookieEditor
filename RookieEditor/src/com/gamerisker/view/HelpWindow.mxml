@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="400" height="364" backgroundColor="#CCCCCC" contentBackgroundColor="#CCCCCC"
+		  showStatusBar="false" close="Close()"
+		  addedToStage="Init()">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.core.Define;
+			
+			import flash.net.navigateToURL;
+			
+			private function Init() : void
+			{
+				var appXML:XML = NativeApplication.nativeApplication.applicationDescriptor;
+				var ns:Namespace = appXML.namespace();
+				
+				label.text = "当前版本：" + appXML.ns::versionNumber;
+			}
+			
+			private function Close() : void
+			{
+				this.close()
+				RookieEditor.getInstante().Help = null;
+			}
+			
+			private function OnStop(event : MouseEvent) : void
+			{
+				event.stopPropagation();
+			}
+
+		]]>
+	</fx:Script>
+	<s:TitleWindow width="100%" height="100%" title="关于 RookieEditor"
+				   mouseDown="{this.nativeWindow.startMove()}"
+				   close="Close()">
+		<s:Image x="10" y="10" width="48" height="48"
+				 source="@Embed('ComponentIcon/Logo.png')"/>
+	</s:TitleWindow>
+	<s:Label x="68" y="42" text="作者：YangDan"/>
+	<s:Label x="68" y="60" id="label"/>
+	<s:Button label="更新日志" x="320" y="60" click="{RookieEditor.getInstante().ChangeLog.open()}"/>
+	<s:Label x="68" y="78" text="邮箱：8480136@qq.com"/>
+	<s:TextArea x="11" y="98" width="379" height="74" editable="false" mouseDown="OnStop(event)"
+				text="RookieEditor是基于Rookie Component 组件的界面编辑器                
+				组件地址：https://github.com/YangDan/Rookie-Components"/>
+	<s:Button label="官网链接" x="165" y="338" click="{navigateToURL(new URLRequest(Define.DOWNVERSION))}"/>
+	<s:Label x="10" y="180" width="323" text="del : 删除当前控制的组件"/>
+	<s:Label x="188" y="180" width="202" text="a : 向左移动组件坐标"/>
+	<s:Label x="10" y="200" width="323" text="d : 向右移动组件坐标"/>
+	<s:Label x="188" y="200" width="202" text="w : 向上移动组件坐标"/>
+	<s:Label x="10" y="220" width="323" text="s : 向下移动组件坐标"/>
+	<s:Label x="188" y="220" width="202" text="↑：多选情况下，移动组件坐标"/>
+	<s:Label x="10" y="240" width="323" text="←：多选情况下，移动组件坐标"/>
+	<s:Label x="188" y="240" width="202" text="→：多选情况下，移动组件坐标"/>
+	<s:Label x="10" y="260" width="323" text="ctrl+f : 打包目录"/>
+	<s:Label x="188" y="260" width="202" text="ctrl+r : 分解cfg文件"/>
+	<s:Label x="10" y="280" width="323" text="ctrl+c : 复制选中组件"/>
+	<s:Label x="188" y="280" width="202" text="ctrl+v : 粘贴"/>
+	<s:Label x="10" y="300" width="323" text="ctrl+x : 剪切"/>
+	<s:Label x="188" y="300" width="202" text="ctrl+s : 保存"/>
+	<s:Label x="10" y="320" width="323" text="ctrl+o : 打开"/>
+	<s:Label x="188" y="320" width="202" text="esc : 取消选中"/>
+</s:Window>

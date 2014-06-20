@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="600" height="400"
+		  creationComplete="Init(event)" 
+		  resize="OnResize(event)"
+		  backgroundAlpha="0.0" 
+		  renderMode="direct"
+		  showStatusBar="false"
+		  close="{RookieEditor.getInstante().Editor = null}">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.core.Define;
+			import com.gamerisker.editor.Editor;
+			import com.gamerisker.manager.SharedManager;
+			
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			
+			import spark.components.Alert;
+			import spark.components.Group;
+			import spark.components.Panel;
+			
+			import starling.core.Starling;
+			import starling.events.Event;
+			import starling.utils.HAlign;
+			import starling.utils.VAlign;
+			
+			private var mStarling : Starling;
+//			private var m_title : String;
+			
+//			override public function get title():String
+//			{
+//				if(m_title==null || m_title == "")m_title = "editor.xml";
+//			
+//				return m_title
+//			}
+//			override public function set title(value:String):void
+//			{
+//				panel.title = "编辑区 ---> " + value; 
+//				m_title = value;
+//			}
+			
+			public function setStatsVisble(value : Boolean) : void
+			{
+				if(value) 
+				{
+					Starling.current.showStats = true;
+					Starling.current.showStatsAt(HAlign.LEFT,VAlign.BOTTOM);
+				}
+				else 
+				{
+					Starling.current.showStats = false;
+				}
+			}
+			
+			public function setTitleBar(value : Boolean) : void
+			{
+				var child : DisplayObject = panel.skin["_TitleWindowSkin_Group1"].getChildAt(2)
+				child.visible = value;
+			}
+			
+			private function Init(e : flash.events.Event) : void
+			{
+				var child : DisplayObject = panel.skin["_TitleWindowSkin_Group1"].getChildAt(1)
+				child.visible = false;
+				
+				Start();
+			}
+			
+			private function OnStartDrag(event : MouseEvent) : void
+			{
+				var group : Group = event.target as Group;
+				
+				if(panel.moveArea == group)
+				{
+					event.stopImmediatePropagation();
+					this.nativeWindow.startMove();
+				}
+				
+			}
+			
+			private function OnClose(event : flash.events.Event) : void
+			{
+				this.close();
+			}
+			
+			private function Start(event : flash.events.Event = null) : void
+			{			
+				Define.stg = stage;
+				Define.stageWidth = stage.fullScreenWidth;
+				Define.stageHeight = stage.fullScreenHeight;
+				
+				mStarling = new Starling(Main , stage , null,null,"auto", "baseline");
+				mStarling.simulateMultitouch = false;
+				mStarling.enableErrorChecking = true;
+				mStarling.stage.color = 0xcccccc;
+				
+				mStarling.addEventListener(starling.events.Event.ROOT_CREATED, function(event:starling.events.Event):void
+				{
+					mStarling.start();
+				});
+			}
+			
+			private function OnResize(event : flash.events.Event = null) : void
+			{
+				if(Define.stg && stage && mStarling)
+				{
+					mStarling.viewPort = new Rectangle(0,0,this.stage.stageWidth,this.stage.stageHeight)
+					mStarling.stage.stageWidth = stage.stageWidth;
+					mStarling.stage.stageHeight = this.stage.stageHeight;
+					
+					Define.Scene_Edit.setStageSize(stage.stageWidth,stage.stageHeight);
+				}
+			}
+		]]>
+	</fx:Script>
+	<s:TitleWindow title="编辑区" x="0" y="0" width="100%" height="100%" id="panel" close="OnClose(event)" mouseDown="OnStartDrag(event)"/>
+</s:Window>

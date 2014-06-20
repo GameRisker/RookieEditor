@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="600" height="300" backgroundColor="#CCCCCC" contentBackgroundColor="#CCCCCC"
+		  addedToStage="Init()"
+		  close="Close()">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.core.Define;
+			
+			import mx.collections.ArrayList;
+			
+			private function Init() : void
+			{
+				move((stage.fullScreenWidth - width) >> 1,(stage.fullScreenHeight - height) >> 1);
+				statusBar.height = 3;
+				
+				var load : URLLoader = new URLLoader();
+				load.load(new URLRequest(Define.UPDATE));
+				load.addEventListener(Event.COMPLETE , OnComplete);
+			}
+			
+			private function OnComplete(event : Event) : void
+			{
+				var xml : XML = new XML(event.target.data);
+				var ns:Namespace = xml.namespace();
+				xml.removeNamespace(ns);
+
+				var list : Array = new Array();
+				for each(var item : XML in xml.ns::log)
+				{
+					list.push({"listName" : item.toString()});
+				}
+				m_list.dataProvider = new ArrayList(list);
+				
+			}
+			
+			private function Close() : void
+			{
+				if(m_call)m_call();
+				this.close()
+				RookieEditor.getInstante().ChangeLog = null;
+			}
+			
+			private var m_call : Function;
+			public function callFunction(call : Function) : void
+			{
+				m_call = call;
+			}
+			
+			private function OnSureClick(event : MouseEvent) : void
+			{
+				Close();
+			}
+		]]>
+	</fx:Script>
+	<s:TitleWindow width="100%" height="100%" title="更新日志"
+				   mouseDown="{this.nativeWindow.startMove()}"
+				   close="Close()">
+		<s:VGroup width="100%" height="100%">
+			<s:List id="m_list" width="100%" height="90%" mouseDown="{event.stopPropagation();}">
+				<s:itemRenderer>
+					<fx:Component>
+						<s:ItemRenderer>
+							<s:Label id="nameLabel" text='{data["listName"]}' top="5" left="15" right="5" />
+						</s:ItemRenderer>
+					</fx:Component>
+				</s:itemRenderer>
+			</s:List>
+			<s:HGroup x="0" y="20" width="100%" height="10%" horizontalAlign="center">
+				<s:Button width="120" label="确定" click="OnSureClick(event)"/>
+			</s:HGroup>
+		</s:VGroup>
+		
+	</s:TitleWindow>
+	
+</s:Window>

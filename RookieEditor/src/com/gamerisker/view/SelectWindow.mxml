@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  width="150" height="450" creationComplete="Init()"
+		  title="组件列表"
+		  resizable="true">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.manager.MouseManager;
+			import com.gamerisker.manager.TexturesManager;
+//			import logic.manager.MouseManager;
+//			import logic.manager.TexturesManager;
+				
+			private function Init() : void
+			{
+				statusBar.height = 3;
+				panel.titleDisplay.addEventListener(MouseEvent.MOUSE_DOWN,OnStartDrag);
+			}
+			
+			private function OnStartDrag(event : MouseEvent) : void
+			{
+				this.nativeWindow.startMove();
+			}
+			
+			private function OnComponentClick(event : MouseEvent) : void
+			{
+				var bitmap : flash.display.Sprite = TexturesManager.getIcon(event.target.name);
+				bitmap.mouseChildren = bitmap.mouseEnabled = false;
+				bitmap.x = 100;
+				bitmap.y = 100;
+				MouseManager.AddBand(bitmap,event.target.name);
+			}
+			
+			private function OnComponentRemove(event : MouseEvent) : void
+			{
+				if(MouseManager.GetBand())
+				{
+					MouseManager.RemoveBand();
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:TitleWindow title="组件列表" x="0" y="0" width="100%" height="100%" id="panel" mouseDown="{this.nativeWindow.startMove()}" close="{RookieEditor.getInstante().Select = null;this.close()}">
+			<s:VGroup x="0" y="20" width="100%" height="100%" horizontalAlign="center">
+				<s:Button name="Button" x="15" y="15" width="120" label="Button" click="OnComponentClick(event)"/>
+				<s:Button name="ImageButton" x="15" y="40" width="120" label="ImageButton" click="OnComponentClick(event)"/>
+				<s:Button name="CheckBox" x="15" y="65" width="120" label="CheckBox" click="OnComponentClick(event)"/>
+				<s:Button name="Label" x="15" y="90" width="120" label="Label" click="OnComponentClick(event)"/>
+				<s:Button name="TitleWindow" x="15" y="115" width="120" label="TitleWindow" click="OnComponentClick(event)"/>
+				<s:Button name="RadioButton" x="15" y="140" width="120" label="RadioButton" click="OnComponentClick(event)"/>
+				<s:Button name="Slider" x="15" y="165" width="120" label="Slider" click="OnComponentClick(event)"/>
+				<s:Button name="SkinFrame" x="15" y="190" width="120" label="SkinFrame" click="OnComponentClick(event)"/>
+				<s:Button name="SkinImage" x="15" y="215" width="120" label="SkinImage" click="OnComponentClick(event)"/>
+				<s:Button name="List" x="15" y="240" width="120" label="List" click="OnComponentClick(event)"/>
+				<s:Button name="Tile" x="15" y="265" width="120" label="Tile" click="OnComponentClick(event)"/>
+				<s:Button name="TileGroup" x="15" y="290" width="120" label="TileGroup" click="OnComponentClick(event)"/>
+				<s:Button name="ImageNumber" x="15" y="315" width="120" label="ImageNumber" click="OnComponentClick(event)"/>
+				
+				<s:Button x="17" y="370" width="120" label="清除" click="OnComponentRemove(event)" toolTip="清除当前绑定在鼠标上的组件"/>
+			</s:VGroup>	
+	</s:TitleWindow>
+	
+	<!--s:Button x="10" y="240" width="102" label="CheckBox" icon="Source/ComponentIcon/CheckBox.jpg"/-->
+	<!--s:Button x="10" y="240" width="102" label="CheckBox" icon="Source/ComponentIcon/CheckBox.jpg"/-->
+	<!--s:Button x="10" y="240" width="102" label="CheckBox" icon="Source/ComponentIcon/CheckBox.jpg"/-->
+	<!--s:Button x="10" y="240" width="102" label="CheckBox" icon="Source/ComponentIcon/CheckBox.jpg"/-->
+</s:Window>

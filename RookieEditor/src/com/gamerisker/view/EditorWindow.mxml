@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="258" height="122"
+			   close="onCloseWindow(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.command.Command;
+			import com.gamerisker.editor.Editor;
+			
+			import mx.events.ColorPickerEvent;
+			import mx.events.ItemClickEvent;
+			import mx.managers.PopUpManager;
+			
+			import spark.components.Group;
+			
+			private var m_value : Object;
+			
+			private var m_curEditor : Editor;
+			private var m_name : String;
+			
+			private function onCloseWindow(event : Event=null) : void
+			{
+				if(m_input.visible)
+				{
+					m_curEditor[m_name] =(m_input.text)
+				}
+				
+				RookieEditor.getInstante().Operate.addCommand(new Command(Command.ChangeName));//记录命令
+				RookieEditor.getInstante().Tree.update();
+				
+				PopUpManager.removePopUp(this);
+				m_curEditor = null;
+				m_value = null;
+			}
+			
+			private function Init() : void
+			{
+				m_true.visible = false;
+				m_false.visible = false;
+				m_input.visible = false;
+				m_slider.visible = false;
+				m_color.visible = false;
+				sliderInput.visible = false;
+			}
+			
+			public function setTarget(value : Object , target : Editor) : void
+			{
+				Init();
+				
+				m_name = value["Name"];
+				
+				m_label.text = m_name + " : ";
+				
+				m_curEditor = target;
+				
+				title = target.type;
+				
+				switch(m_name)
+				{
+					case "enabled" :
+					case "useHandCursor" :
+					case "Position" :
+					case "selected" :
+					case "touchable" :
+					case "isShow" :
+					case "toggle" : 
+					case "enabled" :
+					case "isCreateLabel" :
+					case "bold" :
+						setRadioButton(value,target);
+						break
+					case "alpha" :
+						m_slider.minimum = 0;
+						m_slider.maximum = 1;
+						m_slider.stepSize=0.1;
+						setSilver(value,target);
+						break
+					case "rotation" :
+						m_slider.minimum = 0;
+						m_slider.maximum = 3.1415926 * 2;
+						m_slider.stepSize=0.01;
+						setSilver(value,target);
+						break
+					case "color" :
+						setColor(value,target);
+						break
+					default :
+						setInput(value,target);
+						break
+				}
+			}
+			
+			private function setRadioButton(value : Object , target : Editor) : void
+			{
+				m_true.visible = true;
+				m_false.visible = true;
+				cardtype.selection = (value["Value"] == true ? m_true : m_false);
+			}
+			
+			private function setColor(value : Object , target : Editor) : void
+			{
+				m_color.visible = true;
+				m_color.selectedColor = value["Value"];
+			}
+			
+			private function setInput(value : Object , target : Editor) : void
+			{
+				stage.focus = m_input;
+				m_input.visible = true;
+				m_input.text = value["Value"];
+			}
+			
+			private function setSilver(value : Object , target : Editor) : void
+			{
+				sliderInput.visible = m_slider.visible = true;
+				m_slider.value = value["Value"];
+			}
+			
+			private function handleSlider(event : Event) : void
+			{
+				m_curEditor[m_name] = m_slider.value;
+				sliderInput.text = String(m_slider.value);
+				
+				RookieEditor.getInstante().Property.ResetProperty();
+			}
+			
+			private function handleSliderInput(event : Event) : void
+			{
+				m_slider.value = Number(event.target.text);
+				m_curEditor[m_name] = m_slider.value;
+				
+				RookieEditor.getInstante().Property.ResetProperty();
+			}
+				
+			private function handleRadioButton(event:ItemClickEvent):void 
+			{
+				m_curEditor[m_name] = (event.currentTarget.selectedValue == "true");
+				
+				RookieEditor.getInstante().Property.ResetProperty();
+			}
+			
+			private function handleTextInput(event : Event) : void
+			{
+				m_curEditor[m_name] = (m_input.text);
+				RookieEditor.getInstante().Property.ResetProperty();
+				m_input.visible = false;
+				onCloseWindow();
+			}
+			
+			private function handleColor(event : ColorPickerEvent) : void
+			{
+				m_curEditor[m_name] = event.color;
+				
+				RookieEditor.getInstante().Property.ResetProperty();
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="cardtype" 
+							itemClick="handleRadioButton(event);"
+						    />
+	</fx:Declarations>
+	<s:RadioButton id="m_true" x="77" y="10" label="true" group="{cardtype}"/>
+	<s:RadioButton id="m_false" x="133" y="10" label="false" group="{cardtype}"/>
+	<s:TextInput id="m_input" x="76" y="6" width="170" enter="handleTextInput(event)"/>
+	<s:HSlider id="m_slider" x="76" y="11" width="170" change="handleSlider(event)" liveDragging="true"/>
+	<s:TextInput x="78" y="30" id="sliderInput" change="handleSliderInput(event)" restrict="0-9."/>
+	<s:Button id="m_button" x="93" y="60" click="onCloseWindow(event)" label="确定"/>
+	<mx:ColorPicker id="m_color" x="78" y="10" change="handleColor(event)"/>
+	<s:Label id="m_label" x="10" y="12" width="60" height="18" text="color :" textAlign="right"
+			 verticalAlign="middle"/>
+	
+</s:TitleWindow>

@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="900"
+					   height="150"
+					   backgroundAlpha="0"
+					   addedToStage="Init()"
+					   close="OnCloseWindow(event)" 
+					   frameRate="60"
+					   >
+	<fx:Style source="RookieEditor.css"/>
+	
+	<fx:Script>
+		<![CDATA[
+			import air.update.ApplicationUpdaterUI;
+			import air.update.events.UpdateEvent;
+			
+			import com.gamerisker.core.Define;
+			import com.gamerisker.manager.ControlManager;
+			import com.gamerisker.manager.FileManager;
+			import com.gamerisker.manager.MouseManager;
+			import com.gamerisker.manager.MultipleManager;
+			import com.gamerisker.manager.OperateManager;
+			import com.gamerisker.manager.SharedManager;
+			import com.gamerisker.utils.GUI;
+			import com.gamerisker.view.AlignMentWindow;
+			import com.gamerisker.view.ChangeLogWindow;
+			import com.gamerisker.view.CodeWindow;
+			import com.gamerisker.view.EditorScene;
+			import com.gamerisker.view.HelpWindow;
+			import com.gamerisker.view.HistroyWindow;
+			import com.gamerisker.view.LoadBarWindow;
+			import com.gamerisker.view.PropertyWindow;
+			import com.gamerisker.view.SelectWindow;
+			import com.gamerisker.view.SetSystemWindow;
+			import com.gamerisker.view.SkinBrowse;
+			import com.gamerisker.view.TreeWindow;
+			
+			import mx.events.ColorPickerEvent;
+			
+			import spark.components.Alert;
+			import spark.components.Window;
+			
+			private var appUpdater:ApplicationUpdaterUI = new ApplicationUpdaterUI();  
+			
+			private static var m_Operate : OperateManager = new OperateManager;
+			
+			private static var m_LoadBar : LoadBarWindow;
+			private static var PropertyW : PropertyWindow;
+			private static var SelectW : SelectWindow;
+			private static var TreeW : TreeWindow;
+			private static var EditorW : EditorScene;
+			private static var m_AlignW : AlignMentWindow;
+			private static var m_SkinW : SkinBrowse;
+			private static var m_Rookie : RookieEditor;
+			private static var m_System : SetSystemWindow;
+			private static var m_CodeW : CodeWindow;
+			private static var m_Help : HelpWindow;
+			private static var m_ChangeLog : ChangeLogWindow;
+			private static var m_histroy : HistroyWindow;
+			
+			private function Init() : void
+			{
+				m_Rookie = this;
+				
+				visible = false;
+				
+				Define.fullScreenWidth = stage.fullScreenWidth;
+				Define.fullScreenHeight = stage.fullScreenHeight;
+				
+				var _x : int = Math.max(0,(stage.fullScreenWidth - LoadBar.width) >> 1);
+				var _y : int = Math.max(0,(stage.fullScreenHeight - LoadBar.height) >> 1);
+				LoadBar.open();
+				LoadBar.move(_x,_y);
+				
+			}
+			
+			public function Start() : void
+			{
+				Editor.open();
+				
+				Tree.open();
+				
+				Property.open();
+				
+				Select.open();
+								
+				Histroy.open();
+				
+				statusBar.height = 3;
+				
+				Hide();
+				
+				CheckVersion();//检查版本更新
+			}
+			
+			public function Hide() : void
+			{
+				Editor.visible = false;
+				
+				Tree.visible = false;
+				
+				Property.visible = false;
+				
+				Select.visible = false;
+				
+				Histroy.visible = false;
+				
+				this.visible = false;
+			}
+			
+			
+			public static function getInstante() : RookieEditor
+			{
+				return m_Rookie;
+			}
+			
+			/**操作管理*/
+			public function get Operate() : OperateManager{return m_Operate;}
+				
+			public function set Help(value:HelpWindow):void{m_Help = value;}
+			public function get Help():HelpWindow
+			{
+				if(!m_Help)
+				{
+					m_Help = new HelpWindow;
+					m_Help.type = NativeWindowType.UTILITY;
+					m_Help.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return m_Help;
+			}
+			
+			public function set LoadBar(value:LoadBarWindow):void	{m_LoadBar = value;}
+			public function get LoadBar():LoadBarWindow
+			{
+				if(!m_LoadBar)
+				{
+					m_LoadBar = new LoadBarWindow;
+					m_LoadBar.type = NativeWindowType.UTILITY;
+					m_LoadBar.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return m_LoadBar;
+			}
+			
+			public function set Editor(value : EditorScene) : void{EditorW = value;}
+			public function get Editor() : EditorScene
+			{
+				if(!EditorW)
+				{
+					EditorW = new EditorScene;
+					EditorW.type = NativeWindowType.UTILITY;
+					EditorW.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				
+				return EditorW;
+			}
+			
+			public function set Tree(value : TreeWindow) : void{TreeW = value;}
+			public function get Tree() : TreeWindow
+			{
+				if(!TreeW)
+				{
+					TreeW = new TreeWindow;
+					TreeW.type = NativeWindowType.UTILITY;
+					TreeW.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return TreeW;
+			}
+			
+			public function set Property(value : PropertyWindow) : void{PropertyW = value;}
+			public function get Property() : PropertyWindow
+			{
+				if(!PropertyW)
+				{
+					PropertyW = new PropertyWindow;
+					PropertyW.type = NativeWindowType.UTILITY;
+					PropertyW.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return PropertyW;
+			}
+			
+			public function set Select(value : SelectWindow) : void{SelectW = value;}
+			public function get Select() : SelectWindow
+			{
+				if(!SelectW)
+				{
+					SelectW = new SelectWindow;
+					SelectW.type = NativeWindowType.UTILITY;
+					SelectW.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return SelectW;
+			}
+			
+			public function set Code(value : CodeWindow) : void{m_CodeW = value;}
+			public function get Code() : CodeWindow
+			{
+				if(!m_CodeW)
+				{
+					m_CodeW = new CodeWindow;
+					m_CodeW.type = NativeWindowType.UTILITY;
+					m_CodeW.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return m_CodeW;
+			}
+			
+			public function set Align(value : AlignMentWindow) : void{m_AlignW = value;}
+			public function get Align() : AlignMentWindow
+			{
+				if(!m_AlignW)
+				{
+					m_AlignW = new AlignMentWindow;
+					m_AlignW.type = NativeWindowType.UTILITY;
+					m_AlignW.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return m_AlignW;
+			}
+			
+			public function set Skin(value : SkinBrowse) : void{m_SkinW = value;}
+			public function get Skin() : SkinBrowse
+			{
+				if(!m_SkinW)
+				{
+					m_SkinW = new SkinBrowse;
+					m_SkinW.type = NativeWindowType.UTILITY;
+					m_SkinW.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return m_SkinW;
+			}
+			
+			public function set System(value : SetSystemWindow) : void{m_System = value;}
+			public function get System() : SetSystemWindow
+			{
+				if(!m_System)
+				{
+					m_System = new SetSystemWindow;
+					m_System.type = NativeWindowType.UTILITY;
+					m_System.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return m_System;
+			}
+			
+			public function set ChangeLog(value : ChangeLogWindow) : void{m_ChangeLog = value;}
+			public function get ChangeLog() : ChangeLogWindow
+			{
+				if(!m_ChangeLog)
+				{
+					m_ChangeLog = new ChangeLogWindow;
+					m_ChangeLog.type = NativeWindowType.UTILITY;
+					m_ChangeLog.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return m_ChangeLog;
+			}
+			
+			public function set Histroy(value : HistroyWindow) : void{m_histroy = value}
+			public function get Histroy() : HistroyWindow
+			{
+				if(!m_histroy)
+				{
+					m_histroy = new HistroyWindow;
+					m_histroy.type = NativeWindowType.UTILITY;
+					m_histroy.systemChrome = NativeWindowSystemChrome.NONE;
+				}
+				return m_histroy;
+			}
+			
+			public function ResetPosition() : void
+			{
+				SelectW.visible = true;
+				PropertyW.visible = true;
+				TreeW.visible = true;
+				EditorW.visible = true;
+				m_histroy.visible = true;
+				
+				this.width = stage.fullScreenWidth - SelectW.width - PropertyW.width;
+				EditorW.height = stage.fullScreenHeight - this.height - 100;
+				EditorW.width = this.width;
+				
+//				ChangeLog.move((stage.fullScreenWidth - ChangeLog.width) >> 1,(stage.fullScreenHeight - ChangeLog.height) >> 1);
+				
+				SelectW.move(0,0);
+				TreeW.move(0,SelectW.height);
+				
+				this.move(SelectW.width,0);
+				EditorW.move(SelectW.width,this.height);
+				PropertyW.move(SelectW.width + this.width,0);
+				m_histroy.move(SelectW.width + this.width,PropertyW.height);
+				
+				//所有窗口初始化完成后 显示
+				Editor.visible = true;
+				
+				Tree.visible = true;
+				
+				Property.visible = true;
+				
+				Select.visible = true;
+				
+				Histroy.visible = true;
+				
+				this.visible = true;
+				
+				LoadBar.close();
+			}
+			
+			public function setResizeStage(w:int,h:int) : void
+			{
+				_width.text = String(w);
+				_height.text = String(h);
+			}
+			
+			public function OnCloseWindow(event : Event) : void
+			{
+				if(PropertyW)PropertyW.close();
+				if(TreeW)TreeW.close();
+				if(SelectW)SelectW.close();
+				if(EditorW)EditorW.close();
+				if(Code)Code.close();
+				if(Help)Help.close();
+				if(LoadBar)LoadBar.close();
+				if(ChangeLog)ChangeLog.close();
+				if(Histroy)Histroy.close();
+				
+				getInstante().close();
+				
+				try{if(m_AlignW && !m_AlignW.closed)m_AlignW.close()}
+				catch(e:Error){};
+				
+				try{if(m_SkinW && !m_SkinW.closed)m_SkinW.close()}
+				catch(e:Error){};
+				
+				try{if(m_System && !m_System.closed)m_System.close()}
+				catch(e:Error){};
+				
+			}
+			
+			private function CheckVersion() : void
+			{
+				appUpdater.updateURL = Define.UPDATE;
+				appUpdater.isCheckForUpdateVisible = false;
+				appUpdater.addEventListener(UpdateEvent.INITIALIZED, onUpdate); 
+				appUpdater.initialize();
+			}
+			
+			private function onUpdate(event:UpdateEvent):void
+			{  			
+				appUpdater.localeChain = ["zh_CN","en_US"];
+				appUpdater.checkNow();
+			}
+			
+			private function OnSave() : void
+			{
+				if(ControlManager.getCurrentComponent() != null)
+				{
+					FileManager.saveXMLFile();
+				}
+				else
+				{
+					Alert.show("没有控制组件","错误",Alert.OK,RookieEditor.EditorW);
+				}
+			}
+			
+			private function OnOpen() : void
+			{
+				FileManager.openViewFile();
+			}
+			
+			private function OnPack() : void
+			{
+				FileManager.packXMLFile();
+			}
+			
+			private function OnPrasePacke() : void
+			{
+				FileManager.onPrasePacke();
+			}
+			
+			private function OnKeyPacker() : void
+			{
+				FileManager.keyPackXMLFile();
+			}
+			
+			private function OnOpenComponent() : void
+			{
+				Select.open();
+			}
+			
+			private function OnOpenProperty() : void
+			{
+				Property.open();
+			}
+			
+			private function OnOpenTree() : void
+			{
+				Tree.open();
+			}
+			
+			private function OnOpenEditor() : void
+			{
+				Editor.open();
+			}
+			
+			private function ShowHistory() : void
+			{
+				Histroy.open();
+			}
+			
+			private function OnShowCode() : void
+			{
+				var _x : int = Math.max(0,(stage.fullScreenWidth - Code.width) >> 1);
+				var _y : int = Math.max(0,(stage.fullScreenHeight - Code.height) >> 1);
+				Code.open();
+				Code.move(_x,_y);
+			}
+			
+			public function OnSetSystem() : void
+			{
+				var _x : int = Math.max(0,(stage.fullScreenWidth - System.width) >> 1);
+				var _y : int = Math.max(0,(stage.fullScreenHeight - System.height) >> 1);
+				System.open();
+				System.move(_x , _y);
+			}
+			
+			private function OnClear() : void
+			{
+				Define.Scene_Edit.Clear();
+				MultipleManager.RemoveAll();
+				ControlManager.target = null;
+				Tree.update();
+				Code.update();
+				getInstante().Editor.title = "";
+			}
+			
+			private function OnChangeColor(event : ColorPickerEvent) : void
+			{
+				Define.starlingStg.color = event.color;
+			}
+			
+			private function OnShowAlign() : void
+			{
+				var _x : int = Math.max(0,(stage.fullScreenWidth - Align.width) >> 1);
+				var _y : int = Math.max(0,(stage.fullScreenHeight - Align.height) >> 1);
+				
+				Align.open();
+				Align.move(_x,_y);
+			}
+			
+			private function OnShowHelp() : void
+			{
+				var _x : int = Math.max(0,(stage.fullScreenWidth - Help.width) >> 1);
+				var _y : int = Math.max(0,(stage.fullScreenHeight - Help.height) >> 1);
+				
+				Help.open();
+				Help.move(_x,_y);
+			}
+			
+			private function OnResizeStage() : void
+			{
+				Editor.width = int(_width.text);
+				Editor.height = int(_height.text);
+			}
+			
+			private function OnStartDrag(event : MouseEvent) : void
+			{
+				this.nativeWindow.startMove();
+			}
+			
+			private function OnChangeCheck(event : Event) : void
+			{
+				RookieEditor.getInstante().Editor.setTitleBar(check.selected);
+			}
+			
+			private function OnChangeCheckFps(event : Event) : void
+			{
+				RookieEditor.getInstante().Editor.setStatsVisble(check0.selected);
+			}
+			
+			private function OnOpenSource(event : MouseEvent) : void
+			{
+				var file : File = new File(SharedManager.getInstance().getTextureUrl());
+				file.openWithDefaultApplication();
+			}
+		]]>
+	</fx:Script>
+	<s:TitleWindow title="工具栏" x="0" y="0" width="100%" height="100%" id="panel" mouseDown="OnStartDrag(event)" close="OnCloseWindow(event)">
+		<s:HGroup width="100%" height="22" x="10" y="2" >
+			<s:Button label="组件列表" click="OnOpenComponent()" toolTip="打开组件列表"/>
+			<s:Button label="组件属性" click="OnOpenProperty()" toolTip="打开组件属性"/>
+			<s:Button label="组件树" click="OnOpenTree()" toolTip="打开组件树"/>
+			<s:Button label="显示源码" click="OnShowCode()"  toolTip="打开源码显示窗口"/>
+			<s:Button label="设置" click="OnSetSystem()" toolTip="打开项目系统设置"/>
+			<s:Button label="操作记录" click="ShowHistory()" toolTip="打开操作历史记录"/>
+			<s:Button label="打开资源目录" click="OnOpenSource(event)" toolTip="打开关于窗口"/>
+			<s:Button label="关于" click="OnShowHelp()" toolTip="打开关于窗口"/>
+			<!--s:Button x="720" 	y="2" label="编辑区" click="OnOpenEditor()"/-->
+		</s:HGroup>
+		
+		<s:Label x="10" y="92" 	text="舞台宽高 : " 	width="100"/>
+		<s:TextInput x="70" y="87" text="960" id="_width" width="50" enter="OnResizeStage()" toolTip="修改编辑区宽度（回车确认）"/>
+		<s:Label x="120" y="92" 	text=" x " 	width="50"/>
+		<s:TextInput x="130" y="87" text="640" id="_height" width="50" enter="OnResizeStage()" toolTip="修改编辑区高度（回车确认）"/>
+		<s:HGroup width="100%" height="24" x="10" y="26" >
+			<s:Button label="保存" click="OnSave()" toolTip="保存界面(ctrl+s)"/>
+			<s:Button label="打开" click="OnOpen()"  toolTip="保存界面(ctrl+o)"/>
+			<s:Button label="打包" click="OnPack()"  toolTip="保存界面(ctrl+f)"/>
+			<s:Button label="解包" click="OnPrasePacke()"  toolTip="保存界面(ctrl+r)"/>
+			<s:Button label="一键打包" click="OnKeyPacker()" toolTip="一键打包所有界面"/>
+			<!--s:Button x="720" 	y="2" label="编辑区" click="OnOpenEditor()"/-->
+		</s:HGroup>
+		<s:HGroup x="10" y="52" width="100%" height="27">
+			<s:Button label="清空编辑区" click="OnClear()" toolTip="清空编辑区域中的所有组件"/>
+			<s:Button label="对齐" click="OnShowAlign()" toolTip="打开对齐窗口"/>
+			<!--s:Button x="720" 	y="2" label="编辑区" click="OnOpenEditor()"/-->
+		</s:HGroup>
+		<s:CheckBox x="188" y="89" label="编辑区标题栏" change="OnChangeCheck(event)" id="check" selected="true"/>
+		<s:CheckBox x="289" y="89" label="fps显示" change="OnChangeCheckFps(event)" id="check0" selected="false"/>
+	</s:TitleWindow>
+</s:WindowedApplication>

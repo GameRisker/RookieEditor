@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="246" height="212"
+		  addedToStage="Init()" showStatusBar="false">
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.gamerisker.manager.MultipleManager;
+			
+			import mx.events.FlexEvent;
+			
+			private function Init() : void
+			{
+				isPopUp = true;
+			}
+			
+			private function OnClickTop() : void
+			{
+				MultipleManager.Top();
+			}
+			
+			private function OnClickDown() : void
+			{
+				MultipleManager.Down();
+			}
+			
+			private function OnClickLeft() : void
+			{
+				MultipleManager.Left();
+			}
+			
+			private function OnClickRight() : void
+			{
+				MultipleManager.Right();
+			}
+			
+			private function OnSetDisW(event : FlexEvent) : void
+			{
+				MultipleManager.SetDistanceW(int(event.target.text));
+			}
+			
+			private function OnSetDisH(event : FlexEvent) : void
+			{
+				MultipleManager.SetDistanceH(int(event.target.text));
+			}
+		]]>
+	</fx:Script>
+	<s:TitleWindow title="对齐" width="100%" height="100%" mouseDown="{this.nativeWindow.startMove()}" close="{RookieEditor.getInstante().Align = null;this.close()}">
+		<s:Button x="10" 	y="10" label="上对齐" click="OnClickTop()"/>
+		<s:Button x="140" 	y="10" label="下对齐" click="OnClickDown()"/>
+		<s:Button x="10" 	y="35" label="左对齐" click="OnClickLeft()"/>
+		<s:Button x="140" 	y="35" label="右对齐" click="OnClickRight()"/>
+		
+		<s:Label x="10" y="70" 	text="X坐标间隔: " 	width="100"/>
+		<s:TextInput x="70" y="64" text="" width="90" enter="OnSetDisW(event)"/>
+		
+		<s:Label x="10" y="100" 	text="Y坐标间隔: " 	width="100"/>
+		<s:TextInput x="70" y="94" text="" width="90" enter="OnSetDisH(event)"/>
+	</s:TitleWindow>
+	<s:TextArea x="10" y="157" width="226" height="45" editable="false" text="ctrl+鼠标选中 多选后就能操作"/>
+</s:Window>
