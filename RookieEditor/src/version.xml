@@ -1,7 +1,6 @@
 <update xmlns="http://ns.adobe.com/air/framework/update/description/2.5">
-	<versionNumber>0.2.7</versionNumber>
-	<url>http://blog.gamerisker.com/version/RookieEditor_0_2_7.air</url>
+	<versionNumber>0.2.9</versionNumber>
+	<url>http://blog.gamerisker.com/version/RookieEditor_0_2_9.air</url>
 	<description>请在编辑器关于中查看更新日志！</description>
-	<log>1、修复一些BUG</log>
-	<log>2、添加撤销、重做功能</log>
+	<log>1、更新了Starling 1.5.1</log>
 </update>
