@@ -488,7 +488,17 @@ package com.gamerisker.scene
 		private  function OnKeyDownX(event : starling.events.KeyboardEvent) : void
 		{
 			Define.copyEditor = ControlManager.getCurrentComponent();
-			Define.editorContainer.removeChild(Define.copyEditor);
+
+			if(Define.copyEditor.parent == Define.editorContainer)
+			{
+				Define.editorContainer.removeChild(Define.editorContainer);
+			}
+			else if(Define.copyEditor.parent as Editor)
+			{
+				var component : Editor = Define.copyEditor.parent as Editor;
+				component.removeEditor(Define.copyEditor);
+			}
+			
 			ControlManager.target = null;
 		}
 		
