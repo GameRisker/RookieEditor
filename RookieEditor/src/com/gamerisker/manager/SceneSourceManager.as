@@ -2,7 +2,7 @@ package com.gamerisker.manager
 {
 	/**
 	 *	场景需要加载的文件
-	 * @author YangDan
+	 * @author GameRisker
 	 * 
 	 */	
 	public class SceneSourceManager
