@@ -20,7 +20,7 @@ package com.gamerisker.manager
 	/**
 	 *	本地文件管理 <br>
 	 *  主要完成本地文件操作 <br>
-	 * @author YangDan
+	 * @author GameRisker
 	 * 
 	 */	
 	public class FileManager
