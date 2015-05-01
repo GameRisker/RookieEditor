@@ -6,8 +6,8 @@
 Rookie Editor 是为Rookie Components 量身定制的可视化界面编辑器，编辑区完全使用GPU渲染，与真实项目环境一致，保证最大限度的对项目的支持。<br>
 依赖库: <br>
 	1、Apache Flex 4.11.0 FP 11.9 AIR 3.9 en_US<br>
-        2、Starling 1.4.1     : [https://github.com/YangDan/Starling-Framework][2]<br>
-        3、Rookie Component   : [https://github.com/YangDan/Rookie-Components][3]<br>
+        2、Starling 1.4.1     : [https://github.com/GameRisker/Starling-Framework][2]<br>
+        3、Rookie Component   : [https://github.com/GameRisker/Rookie-Components][3]<br>
 
 Rookie Editor 特点介绍
 -----------------------
@@ -25,11 +25,10 @@ Rookie Editor 下载
 谢谢。
 
 Blog    : [GameRisker][1]<br>
-QQ    	: 8480136<br>
-QQ Mail : 8480136@qq.com <br>
-G  Mail : jamesyang686@gmail.com<br>
+QQ    	: 133523686<br>
+Mail : admin@gamerisker.com <br>
 
 [1]:http://blog.gamerisker.com
-[2]:https://github.com/YangDan/Starling-Framework
-[3]:https://github.com/YangDan/Rookie-Components
+[2]:https://github.com/GameRisker/Starling-Framework
+[3]:https://github.com/GameRisker/Rookie-Components
 [4]:http://blog.gamerisker.com/version/RookieEditor_0_1_5.air
