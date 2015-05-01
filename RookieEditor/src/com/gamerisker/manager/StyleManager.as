@@ -20,7 +20,7 @@ package com.gamerisker.manager
 
 	/**
 	 *	保存组件的默认设置 
-	 * @author YangDan
+	 * @author GameRisker
 	 * 
 	 */	
 	public class StyleManager
